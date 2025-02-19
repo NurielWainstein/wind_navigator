@@ -118,4 +118,41 @@ The `Hap` class represents the High-Altitude Platform (HAP) and manages its expl
 ```bash
 The HAP explored 75.32% of the total area in 24 hours
 total_explored_blocks: 1500
+```
 
+
+## Algorithm Overview
+
+This algorithm is designed to explore a region of interest (ROI) using a High Altitude Platform (HAP). The primary objective is to calculate the optimal path for the HAP to explore the ROI, accounting for both the HAP's capabilities and wind conditions at different altitudes.
+
+### Key Concepts
+
+- **Current Position & Target Position:** The algorithm always considers the current position of the HAP and the target position. The target position is decided based on the exploration strategy, in this case I opted to explore the grid in a simply Zig-Zag pattern to ensure exploring the hole grid, the algorithm calculates the angle between these two points(current and target) to determine the linear path, or in other words, the optimal path.
+
+- **HAP Movement:** The HAP moves at a speed of 10 m/s, which is relatively slow compared to the wind speeds at higher altitudes (2-3 times faster). Therefore, we adjust the HAP's altitude to optimize its movement based on wind speed and direction.
+
+- **Movement Vector Optimization:** The movement vector is calculated by combining the HAP's speed with the wind's force and direction. The result is the optimal direction for movement. The algorithm ensures that the HAP explores one of the eight neighboring squares at a time.
+
+- **Exploration Process:** Every time the HAP moves or the wind changes (once per hour), the algorithm recalculates the angle between the current and target positions and selects the best altitude. This process is repeated, eventually covering the entire ROI.
+
+### Algorithm Details
+
+- **Exploration Grid:** The HAP explores one square at a time (150m x 150m), Although the real exploration grid is 10x1 (1500m x 150m), for simplicity, we assume the HAP can only explore one square at a time.
+
+- **Time to Cover ROI:** The algorithm is slow and can take around 50 days to cover 100 km² of area, which corresponds to approximately 4444 blocks on the exploration grid.
+
+- **Constraints:** The algorithm assumes that the HAP cannot go out of bounds, and thus creates invisible walls around the area to simplify the model.
+
+- **Wind Impact:** The HAP's low power is compensated by the winds, which often propel the HAP faster. However, this dependence on the wind means the exploration process is slower, as the HAP's movement is not entirely autonomous.
+
+### Optimization & Simplifications
+
+- **Wind Influence:** The algorithm dynamically adjusts the HAP's altitude based on wind conditions to optimize its movement. This consideration helps the HAP better align with the desired path.
+
+- **Exploration Complexity:** Although the current method assumes a simplified approach of one square at a time, the actual exploration could involve more complex grid systems, which would need further refinement for more accurate simulations.
+
+---
+
+### Summary
+
+The algorithm efficiently explores the designated ROI by leveraging the wind and optimizing movement vectors. However, it operates slowly due to the HAP's low power and the dependency on wind conditions. Repeated recalculations ensure that the HAP always moves towards the target location, gradually covering the entire region.
