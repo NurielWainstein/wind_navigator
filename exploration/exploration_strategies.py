@@ -1,6 +1,4 @@
 # exploration_strategies.py
-import numpy as np
-
 def zigzag_iterator(matrix):
     rows, cols = matrix.shape
     for i in range(rows):
