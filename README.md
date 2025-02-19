@@ -44,9 +44,9 @@ The main script, when executed, will create an instance of the `Hap` class, run 
 ## Installation
 
 1. Clone the repository or download the necessary files.
-2. Install the required dependencies. For example:
+2. Install the required dependencies:
     ```bash
-    pip install numpy matplotlib
+    pip install -r requirments.txt
     ```
 3. Make sure to configure the wind data path correctly in the script or class initialization.
 
@@ -145,14 +145,20 @@ This algorithm is designed to explore a region of interest (ROI) using a High Al
 
 - **Wind Impact:** The HAP's low power is compensated by the winds, which often propel the HAP faster. However, this dependence on the wind means the exploration process is slower, as the HAP's movement is not entirely autonomous.
 
-### Optimization & Simplifications
+### Future improvements
 
-- **Wind Influence:** The algorithm dynamically adjusts the HAP's altitude based on wind conditions to optimize its movement. This consideration helps the HAP better align with the desired path.
+- **Algorithm:** this algorithm is not optimal as it doesnt count for strong winds that badly affect the desired path, we should implement a more flexible algorithm that will provide some flexibility to the HAP movement, maybe using centroids as targets instead of specific cells
 
-- **Exploration Complexity:** Although the current method assumes a simplified approach of one square at a time, the actual exploration could involve more complex grid systems, which would need further refinement for more accurate simulations.
+- **Consider Specific Areas:** In reality not all the area received in the data is part of the ROI, for example, in this task we need to consider Brasil's borders, we should extend the functionality to make this possible
 
----
+- **Multiple HAPS:** In reality we would like to allow multiple HAPS to explore the same exploration matrix
 
-### Summary
+- **ROI distributions:** use area division algorithms to consider how many HAPS to use in some area
 
-The algorithm efficiently explores the designated ROI by leveraging the wind and optimizing movement vectors. However, it operates slowly due to the HAP's low power and the dependency on wind conditions. Repeated recalculations ensure that the HAP always moves towards the target location, gradually covering the entire region.
+- **Data Analysis:** we should create data analysis functions to further understand the wind patterns, forces and directions in areas and months of interest
+
+- **API:** Implement an api to allow getting real time wind data, making the model much more precise, currently we have only data once an hour
+
+- **MOVEMENT LOGIC:** the current movement logic is not precise, we always assume that moving from one cell to another is a distance of 150m which is incorrect
+
+- **Tests:** Implement tests
