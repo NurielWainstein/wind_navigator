@@ -2,7 +2,7 @@ import numpy as np
 from config import UNIT_DISTANCE, HAP_SPEED_DAY, LAT_LON_MULTIPLIER
 from data_processing.wind_data import load_wind_data
 from data_processing.utilities import expand_ndarrays
-from calculations.vector_calculations import calculate_vector2_direction_and_length
+from calculations.vector_calculations import calculate_resultant_vector_length_and_direction
 from calculations.movement import calculate_angle, move_in_direction
 from exploration.exploration_strategies import zigzag_iterator
 from visualization.plotter import plot_highlighted_matrix
@@ -71,7 +71,7 @@ class Hap:
                 current_wind_speed = wind_speed[self.current_position]
                 current_wind_direction = wind_direction[self.current_position]
 
-                expected_speed, expected_direction = calculate_vector2_direction_and_length(
+                expected_speed, expected_direction = calculate_resultant_vector_length_and_direction(
                     current_wind_direction, current_wind_speed, HAP_SPEED_DAY, target_angle)
 
                 if current_direction is None or (abs(expected_direction - target_angle) < abs(

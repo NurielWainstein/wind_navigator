@@ -1,27 +1,28 @@
 # vector_calculations.py
 import math
 
-def calculate_vector2_direction_and_length(vector1_direction, vector1_length, vector2_length, target_direction):
-    vector1_direction_rad = math.radians(vector1_direction)
+def calculate_resultant_vector_length_and_direction(
+    first_vector_direction, first_vector_length, second_vector_length, target_direction
+):
+    # Convert angles to radians
+    first_vector_direction_rad = math.radians(first_vector_direction)
     target_direction_rad = math.radians(target_direction)
 
-    vector1_x = vector1_length * math.cos(vector1_direction_rad)
-    vector1_y = vector1_length * math.sin(vector1_direction_rad)
+    # Calculate the components (x, y) of the first vector
+    first_vector_x = first_vector_length * math.cos(first_vector_direction_rad)
+    first_vector_y = first_vector_length * math.sin(first_vector_direction_rad)
 
-    target_x = (vector1_length * math.cos(vector1_direction_rad)) + (vector2_length * math.cos(target_direction_rad))
-    target_y = (vector1_length * math.sin(vector1_direction_rad)) + (vector2_length * math.sin(target_direction_rad))
+    # Calculate the components (x, y) of the second vector based on the target direction
+    second_vector_x = second_vector_length * math.cos(target_direction_rad)
+    second_vector_y = second_vector_length * math.sin(target_direction_rad)
 
-    vector2_x = target_x - vector1_x
-    vector2_y = target_y - vector1_y
+    # Calculate the target position after combining both vectors
+    total_x = first_vector_x + second_vector_x
+    total_y = first_vector_y + second_vector_y
 
-    vector2_direction_rad = math.atan2(vector2_y, vector2_x)
-    vector2_direction = math.degrees(vector2_direction_rad)
+    # Calculate the resulting vector length and direction
+    resultant_length = math.sqrt(total_x ** 2 + total_y ** 2)
+    resultant_direction_rad = math.atan2(total_y, total_x)
+    resultant_direction = math.degrees(resultant_direction_rad)
 
-    final_x = vector1_x + vector2_x
-    final_y = vector1_y + vector2_y
-    final_length = math.sqrt(final_x ** 2 + final_y ** 2)
-
-    final_direction_rad = math.atan2(final_y, final_x)
-    final_direction = math.degrees(final_direction_rad)
-
-    return final_length, final_direction
+    return resultant_length, resultant_direction
