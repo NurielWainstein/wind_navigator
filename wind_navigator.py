@@ -1,7 +1,6 @@
 import numpy as np
 from config import UNIT_DISTANCE, HAP_SPEED_DAY, LAT_LON_MULTIPLIER
-from data_processing.wind_data import load_wind_data
-from data_processing.utilities import expand_ndarrays
+from data_processing.wind_data import load_wind_data, process_wind_data
 from calculations.vector_calculations import calculate_resultant_vector_length_and_direction
 from calculations.movement import calculate_angle, move_in_direction
 from exploration.exploration_strategies import zigzag_iterator
@@ -40,50 +39,39 @@ class Hap:
 
         self.target_position = next(self.target_iterator)
 
-    def _process_wind_data(self, u_timestamp, v_timestamp):
-        pressure_levels_data = []
-        for u_pl, v_pl in zip(u_timestamp, v_timestamp):
-            u_data_array = u_pl.data
-            v_data_array = v_pl.data
-
-            wind_speed = np.sqrt(u_data_array ** 2 + v_data_array ** 2)
-            wind_direction = np.arctan2(v_data_array, u_data_array)
-            wind_direction_deg = np.degrees(wind_direction)
-
-            wind_speed = expand_ndarrays(wind_speed)
-            wind_direction_deg = expand_ndarrays(wind_direction_deg)
-
-            pressure_levels_data.append((wind_speed, wind_direction_deg))
-        return pressure_levels_data
-
     def _explore(self, u_data, v_data):
         remaining_minutes = 60
-        pressure_levels_data = self._process_wind_data(u_data, v_data)
+        pressure_levels_data = process_wind_data(u_data, v_data)
 
-        # run until we get new wind data or exploration ended
+        # run until we get new wind data
         while remaining_minutes > 0:
             current_direction = None
             current_speed = None
             target_angle = calculate_angle(self.current_position, self.target_position)
 
             for pl in pressure_levels_data:
+                # get current position data
                 wind_speed, wind_direction = pl
                 current_wind_speed = wind_speed[self.current_position]
                 current_wind_direction = wind_direction[self.current_position]
 
+                # calculate possible speed and direction of the HAP
                 expected_speed, expected_direction = calculate_resultant_vector_length_and_direction(
                     current_wind_direction, current_wind_speed, HAP_SPEED_DAY, target_angle)
 
+                # choose pest altitude
                 if current_direction is None or (abs(expected_direction - target_angle) < abs(
                         current_direction - target_angle) and expected_speed > current_speed):
                     current_speed = expected_speed
                     current_direction = expected_direction
 
+            # make the movement
             new_position = move_in_direction(self.current_position, current_direction)
             new_x_position, new_y_position = new_position
 
             # check that we didn't go out of bound
-            if new_x_position >= 0 and new_y_position >= 0 and new_x_position < self.exploration_matrix.shape[0] and new_y_position < self.exploration_matrix.shape[1]:
+            if (new_x_position >= 0 and new_y_position >= 0 and new_x_position < self.exploration_matrix.shape[0]
+                    and new_y_position < self.exploration_matrix.shape[1]):
                 # update position data
                 self.current_position = new_position
                 self.exploration_matrix[self.current_position] = 1
