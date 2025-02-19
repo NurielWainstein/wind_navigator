@@ -1,4 +1,4 @@
-# exploration_matrix.py
+# exploration_strategies.py
 import numpy as np
 
 def zigzag_iterator(matrix):
