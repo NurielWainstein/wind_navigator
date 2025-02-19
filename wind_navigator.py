@@ -1,5 +1,5 @@
 import numpy as np
-from config import UNIT_DISTANCE, HAP_SPEED, LAT_LON_MULTIPLIER
+from config import UNIT_DISTANCE, HAP_SPEED_DAY, LAT_LON_MULTIPLIER
 from data_processing.wind_data import load_wind_data
 from data_processing.utilities import expand_ndarrays
 from calculations.vector_calculations import calculate_vector2_direction_and_length
@@ -30,10 +30,14 @@ class Hap:
 
         # Initialize exploration matrix
         self.time_frames, self.pressure_levels, self.latitude, self.longitude = u_data.shape
+
         roi_shape = (self.latitude * self.roi_shape_multiplier, self.longitude * self.roi_shape_multiplier)
         self.exploration_matrix = np.zeros(roi_shape)
         self.target_iterator = zigzag_iterator(self.exploration_matrix)
+
         self.current_position = next(self.target_iterator)
+        self.exploration_matrix[self.current_position] = 1
+
         self.target_position = next(self.target_iterator)
 
     def _process_wind_data(self, u_timestamp, v_timestamp):
@@ -57,7 +61,7 @@ class Hap:
         pressure_levels_data = self._process_wind_data(u_data, v_data)
 
         # run until we get new wind data or exploration ended
-        while remaining_minutes > 0 or self.exploration_matrix.min == 1:
+        while remaining_minutes > 0:
             current_direction = None
             current_speed = None
             target_angle = calculate_angle(self.current_position, self.target_position)
@@ -68,7 +72,7 @@ class Hap:
                 current_wind_direction = wind_direction[self.current_position]
 
                 expected_speed, expected_direction = calculate_vector2_direction_and_length(
-                    current_wind_direction, current_wind_speed, HAP_SPEED, target_angle)
+                    current_wind_direction, current_wind_speed, HAP_SPEED_DAY, target_angle)
 
                 if current_direction is None or (abs(expected_direction - target_angle) < abs(
                         current_direction - target_angle) and expected_speed > current_speed):
@@ -83,6 +87,10 @@ class Hap:
                 # update position data
                 self.current_position = new_position
                 self.exploration_matrix[self.current_position] = 1
+
+                # exit condition - matrix fully explored
+                if self.exploration_matrix.min() == 1:
+                    break
 
                 if self.current_position == self.target_position:
                     self.target_position = next(self.target_iterator)
@@ -109,7 +117,7 @@ class Hap:
 
 
 if __name__ == "__main__":
-    hap = Hap("local_files/wd.nc")
+    hap = Hap("local_files/wd1.nc")
     hap.run_exploration()
     hap.visualize_exploration()
     hap.print_exploration_result()
