@@ -20,6 +20,7 @@ class Hap:
         self.longitude = None
         self.wind_data = None
         self.target_iterator = None
+        self.idx = 0
         self._load_data()
 
     def _load_data(self):
@@ -90,10 +91,12 @@ class Hap:
     def run_exploration(self):
         u_data, v_data = self.wind_data
         for u_timestamp, v_timestamp in zip(u_data, v_data):
+            self.idx += 1
+            self.visualize_exploration()
             self._explore(u_timestamp, v_timestamp)
 
     def visualize_exploration(self):
-        plot_highlighted_matrix(self.exploration_matrix)
+        plot_highlighted_matrix(self.exploration_matrix, self.idx)
 
     def print_exploration_result(self):
         total_explored_blocks = self.exploration_matrix.sum()
@@ -105,7 +108,7 @@ class Hap:
 
 
 if __name__ == "__main__":
-    hap = Hap("local_files/wd1.nc")
+    hap = Hap("local_files/july-2023.nc")
     hap.run_exploration()
     hap.visualize_exploration()
     hap.print_exploration_result()
