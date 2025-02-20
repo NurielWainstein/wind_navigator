@@ -1,5 +1,8 @@
 # README for HAP Exploration
 
+https://github.com/user-attachments/assets/b2d67bbb-c1bb-4909-9bd9-6aa7490eedb3
+
+
 ## Overview
 
 This project simulates an exploration process of a High-Altitude Platform (HAP) navigating a specific area while being influenced by wind data. The HAP follows a zigzag exploration strategy, adjusting its movement based on the current wind conditions at different pressure levels and making decisions in real-time.
